@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+  <title>Vue practice</title>
+</head>
+<body>
+
+  <div id="app">
+    <cart-item></cart-item>
+    <div class="product">
+      <div class="product-img">
+        <a :href="url">
+          <img v-bind:src="image" alt="testing">
+        </a>
+      </div>
+      <product :shipping="shipping"  @form-data="handleFormData" ></product>
+      <div class="product-info">
+        <h4>{{ title }}</h4>
+      </div>
+      <h4 v-if = "onSale">{{ printString }}</h4>
+      <span>
+        <p v-if = "inventry > 10">In stock</p>
+        <p v-else-if="inventry <= 10 && inventry > 0">Almost sold out</p>
+        <p v-else>Out of stock</p>
+        <p v-bind:class="linethrough">out of stock as always</p>
+      </span>
+      <span>
+        <p v-if = "onSale">On Sale</p>
+      </span>
+      <div class="product-detail">
+        <ul>
+          <li v-for='detail in details'>{{ detail }}</li>
+        </ul>
+        <ul>
+          <li v-for='variant in variants' v-bind:key="variant.id">
+            <p>{{ variant.color }}</p>
+            </li>
+        </ul>
+        Available sizes: <span v-for="size in sizes">{{ size }} </span>
+        <button v-on:click = "addToCart">Add to cart</button>
+        <button v-on:click = "removeFromCart">Remove from cart</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
