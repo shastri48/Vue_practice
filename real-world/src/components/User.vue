@@ -1,13 +1,13 @@
 <template>
-  <div class="articles">
+  <div class="user-articles">
     <div class="loader" v-if="articles.length==0"></div>
-    <div class="hero-section" v-if="articles.length>0">
-      <h1>conduit</h1>
-      <h5>A place to share your knowledge</h5>
+    <div class="user-section" v-if="articles.length>0">
+      <img class="user-img" :src=this.$route.params.img alt="user-image">
+      <h3>{{this.$route.params.username}}</h3>
     </div>
     <div class="article" v-if="articles.length>0">
       <div class="article-descriptions">
-          <div class="description" v-for="article in articles" :key="article.createdAt">
+        <div class="description" v-for="article in articles" :key="article.createdAt">
           <div class="article-header">
             <img class="article-image" :src=article.author.image alt="image">
             <ul class="article-detail">
@@ -21,53 +21,27 @@
           <router-link class="more" :to="{name: 'detail', params:{slug: article.slug, article}}">Read more...</router-link>
         </div>
       </div>
-      <div class="tags">
-        <h4>Popular Tags</h4>
-        <span v-for="(tag,index) in tags" :key="index">
-          <router-link class="tag" :to="{name: 'tag', params:{tag: tag}}">
-            {{tag}}
-          </router-link>
-        </span>
-      </div>
     </div>
-    <router-view />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import Detail from '../components/Detail.vue';
-import User from '../components/User.vue';
-import moment from 'vue-moment';
 export default {
-  name: "home",
+  name: "user",
   data(){
     return {
-      articles: [],
-      date:"",
-      tags:[],
-      user: {}
-    }
-  },
-  components: {
-    Detail,
-    User
-  },
-  methods:{
-    userFind(e){
-      fetch(`https://conduit.productionready.io/api/profiles/${e.target.textContent}`)
-      .then(res=>res.json())
-      .then(data=>this.user = data.profile)
+      articles:[]
     }
   },
   mounted(){
-    fetch("https://conduit.productionready.io/api/articles").then(res=> res.json()).then(data => this.articles=data.articles);
-    fetch("https://conduit.productionready.io/api/tags").then(res=> res.json()).then(data => this.tags=data.tags);
+    let username = this.$route.params.username;
+    fetch(`https://conduit.productionready.io/api/articles?author=${username}`)
+    .then(res=>res.json())
+    .then(data=> this.articles = data.articles)
   }
-};
-
-
+}
 </script>
+
 
 <style scoped>
   a{
@@ -79,18 +53,20 @@ export default {
     color: gray;
     padding: 20px 0;
   }
-  .user {
-    padding:10px 0;
+  .user-section{
+    padding: 20px 0;
+    background: #f3f3f3;
   }
+  .user-img{
+    border-radius: 50%;
+    margin: 20px 0;
+  }  
+
   .article{
     width: 85%; 
     margin: 0 auto;
     text-align: left;
     padding: 20px 10px;
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    grid-gap: 20px;
-    align-items:flex-start;
   }
   .description {
     border-bottom: 1px solid rgb(201, 201, 201);
@@ -109,10 +85,6 @@ export default {
     grid-template-columns: auto 1fr;
     align-items: center;
   }
-  .hero-section{
-    padding: 30px;
-    background: #5cb85c;
-  }
   h1{
     margin:0;
     font-size: 60px;
@@ -123,18 +95,6 @@ export default {
     color:white;
     font-weight: 300;
     font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-  .tags{
-    background: #f3f3f3;
-    padding: 10px;
-  }
-  .tag{
-    display: inline-block;
-    background: #818a91;
-    padding: 10px;
-    color: white;
-    margin: 5px;
-    border-radius: 15px;
   }
 
   /* loader */

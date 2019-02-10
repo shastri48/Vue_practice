@@ -24,8 +24,8 @@
       <div class="tags">
         <h4>Popular Tags</h4>
         <span v-for="(tag,index) in tags" :key="index">
-          <router-link class="tag" :to="{name: 'tag', params:{tag: tag}}">
-            {{tag}}
+          <router-link :to="{name: 'tag', params:{tag: tag}}">
+            <span class="tag" @click="reRender(tag)">{{tag}}</span>
           </router-link>
         </span>
       </div>
@@ -36,14 +36,14 @@
 
 <script>
 // @ is an alias to /src
-import Detail from '../components/Detail.vue';
-import User from '../components/User.vue';
-import moment from 'vue-moment';
+import Detail from './Detail.vue';
+import User from './User.vue';
 export default {
-  name: "home",
+  name: "tag",
   data(){
     return {
       articles: [],
+      check: "",
       date:"",
       tags:[],
       user: {}
@@ -53,16 +53,25 @@ export default {
     Detail,
     User
   },
+  mounted(){
+    this.articleFetch(this.$route.params.tag);
+  },
   methods:{
     userFind(e){
       fetch(`https://conduit.productionready.io/api/profiles/${e.target.textContent}`)
       .then(res=>res.json())
       .then(data=>this.user = data.profile)
+    },
+    articleFetch(tag){
+      // let tag = this.$route.params.tag;
+      fetch(`https://conduit.productionready.io/api/articles?tag=${tag}`).then(res=> res.json()).then(data => this.articles=data.articles);
+
+      fetch("https://conduit.productionready.io/api/tags").then(res=> res.json()).then(data => this.tags=data.tags);
+    },
+    reRender(tag){
+      this.articles = [];
+      fetch(`https://conduit.productionready.io/api/articles?tag=${tag}`).then(res=> res.json()).then(data => this.articles=data.articles); 
     }
-  },
-  mounted(){
-    fetch("https://conduit.productionready.io/api/articles").then(res=> res.json()).then(data => this.articles=data.articles);
-    fetch("https://conduit.productionready.io/api/tags").then(res=> res.json()).then(data => this.tags=data.tags);
   }
 };
 
@@ -136,7 +145,6 @@ export default {
     margin: 5px;
     border-radius: 15px;
   }
-
   /* loader */
   .loader {
     margin: 0 auto;
@@ -147,17 +155,16 @@ export default {
     height: 120px;
     -webkit-animation: spin 2s linear infinite; /* Safari */
     animation: spin 2s linear infinite;
-  }
+}
 
-  /* Safari */
-  @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
